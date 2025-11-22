@@ -5,7 +5,7 @@ fun criaMenu(): String
 
 fun retornaMenu(respostaMenu : String): String{
     when(respostaMenu){
-        "1"-> return  ("${lerNome()}")
+        "1"-> return  ("${criaLegenda()}")
         "2"->  return (" NÃO IMPLEMENTADO \n ${criaMenu()}")
         "0"->  return " "
         else -> return ("Resposta Inválida. \n ${criaMenu()}")
@@ -52,8 +52,8 @@ fun temMaiuscula(nome: String?) : Boolean {
     if (nome.isNullOrBlank()) {
         return false
     }
-    var temnomeMaiusculo = nome[0].isUpperCase()
-    var temApelidoMaiusculo = nome[ondeTemEspaco(nome)+1].isUpperCase()
+    val temnomeMaiusculo = nome[0].isUpperCase()
+    val temApelidoMaiusculo = nome[ondeTemEspaco(nome)+1].isUpperCase()
 
     if (temApelidoMaiusculo && temnomeMaiusculo == true){
         return true
@@ -95,7 +95,7 @@ fun lerNome(): String? {
 
     } while (validanome(nome)==false)
 
-    return nome
+    return criaLegenda()
 
 }
 
@@ -139,8 +139,46 @@ fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
     return (minas)
 
 }
+fun pedeLegenda(): Boolean{
+
+    println("Mostrar legenda (s/n)?")
+         val respostaLegenda= readln()
+
+    if (respostaLegenda.isNullOrBlank()){
+        return false
+    }
+
+    if (respostaLegenda!=="n"){
+             return false
+    }else{
+        if (respostaLegenda!=="N"){
+             return false
+        }else{
+            if (respostaLegenda!=="s"){
+                return true
+            }else{
+                if (respostaLegenda!=="S"){
+                    return true
+                }
+            }
+        }
+    }
+
+    return false
+}
+fun confirmacaoLegenda(){
+
+    if (pedeLegenda()==true){
+        return pedeLinhas()
+    } else{
+        pedeLinhas()
+    }
+}
 
 fun criaLegenda(numColumns: Int):String?{
+    if (pedeLegenda()== true){
+        return pedeLinhas()
+    }
     var aux = 0
     var textoApoio : String
     val alfabeto  ="A B C D E F G H I J K L M N O P Q R S T U V X Z"
@@ -168,8 +206,43 @@ fun criaLegenda(numColumns: Int):String?{
     return textoFinalLegenda
 }
 
-fun criaTerreno(){
+fun pedeLinhas(): String? {
+    println("Quantas linhas?")
+        var numLines=readln().toInt()
 
+    while (numLines!==1){
+        println("Resposta invalida.")
+
+        println("Quantas linhas?")
+
+         numLines=readln().toInt()
+    }
+
+    return quantasColunas()
+}
+
+fun quantasColunas(): String?{
+    println("Quantas linhas?")
+    var numLines=readln().toInt()
+
+    while(numLines<1){
+        println("Resposta invalida.")
+        println("Quantas linhas?")
+        numLines=readln().toInt()
+    }
+    return ????
+}
+fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean = true): String {
+
+    var resultado = ""
+
+    if (legenda){
+        val legend = criaLegenda(numColumns)
+        if (legend != null){
+            resultado += legend +"\n"
+        }
+    }
+    return resultado
 }
 
 fun main() {

@@ -1,21 +1,103 @@
-
 fun criaMenu(): String
 {
- return (" 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair")
+    return ("\n Bem Vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
 }
 
-fun voltaMenu(respostaMenu : String): String{
+fun retornaMenu(respostaMenu : String): String{
     when(respostaMenu){
-        "1"-> return  (" 1 ")
+        "1"-> return  ("${lerNome()}")
         "2"->  return (" NÃO IMPLEMENTADO \n ${criaMenu()}")
         "0"->  return " "
-        else -> return ("Resposta Inválida.")
+        else -> return ("Resposta Inválida. \n ${criaMenu()}")
     }
 }
 
-//fun validaNome(){
-//    return
-//}
+fun validanome(nome: String?) : Boolean {
+
+    if (nome.isNullOrBlank()){
+        return false
+    } else {
+        if ( nome.length<7) {
+            return false
+             } else{
+                if (temMaiuscula(nome)&& temEspaco(nome)== true) {
+                     return true
+                }
+                     return false
+            }
+
+        }
+    }
+
+
+fun ondeTemEspaco(nome: String?) : Int {
+    if (nome.isNullOrBlank()) {
+        return -1
+    }
+    var contadorPosicao = 0
+    var posicaoEspaco = 0
+
+    while (contadorPosicao < nome.length ) {
+        if (nome[contadorPosicao] == ' ') {
+            posicaoEspaco = contadorPosicao
+            return posicaoEspaco
+        } else {
+            contadorPosicao++
+        }
+    }
+    return -1
+}
+
+fun temMaiuscula(nome: String?) : Boolean {
+    if (nome.isNullOrBlank()) {
+        return false
+    }
+    var temnomeMaiusculo = nome[0].isUpperCase()
+    var temApelidoMaiusculo = nome[ondeTemEspaco(nome)+1].isUpperCase()
+
+    if (temApelidoMaiusculo && temnomeMaiusculo == true){
+        return true
+    }
+    return false
+}
+
+fun temEspaco(nome: String?) : Boolean {
+    if (nome.isNullOrBlank()) {
+        return false
+    }
+
+    var contadorPosicao = 0
+    var contadorEspaco = 0
+
+    while (contadorPosicao < nome.length && contadorEspaco<=1 ) {
+        if (nome[contadorPosicao] == ' ') {
+            contadorPosicao++
+            contadorEspaco++
+        }else{
+            contadorPosicao++
+        }
+    }
+    if (contadorEspaco == 1){
+        return true
+    }
+    return false
+}
+
+fun lerNome(): String? {
+    var nome: String?
+    do {
+        println("Introduza o seu nome:")
+        nome = readLine()
+
+        if (validanome(nome)==false) {
+            println("Nome inválido, tenta outra vez.\n")
+        }
+
+    } while (validanome(nome)==false)
+
+    return nome
+
+}
 
 fun validaNumeroDeMinas(numLines: Int,numColumns: Int,numMines: Int): Boolean{
 
@@ -25,7 +107,6 @@ fun validaNumeroDeMinas(numLines: Int,numColumns: Int,numMines: Int): Boolean{
         return false
     }
     return true
-
 }
 
 fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
@@ -33,7 +114,6 @@ fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
         return null
     }
     val casaVazias : Int = (numLines * numColumns) - 2
-
 
     var minas=0
     if (casaVazias in 14..79) {
@@ -60,11 +140,42 @@ fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
 
 }
 
-//fun criaLegenda(){
-//    return
-//}
+fun criaLegenda(numColumns: Int):String?{
+    var aux = 0
+    var textoApoio : String
+    val alfabeto  ="A B C D E F G H I J K L M N O P Q R S T U V X Z"
+    var auxiliar = numColumns
+    var textoFinalLegenda = ""
 
-fun main() {
+    if (numColumns < 1) {
+        return null.toString()
+    }
+
+    do{
+        textoApoio = alfabeto[aux].toString()
+
+        textoFinalLegenda += if (auxiliar!=1) {
+            "$textoApoio   "
+        } else {
+            textoApoio
+        }
+
+        aux+=2
+
+        auxiliar--
+    }while (auxiliar!=0)
+
+    return textoFinalLegenda
 }
 
+fun criaTerreno(){
 
+}
+
+fun main() {
+    println(criaMenu())
+     val respostaMenu=readln()
+        println("${retornaMenu(respostaMenu)}")
+
+
+}

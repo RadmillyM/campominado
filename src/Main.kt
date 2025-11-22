@@ -4,12 +4,14 @@ fun criaMenu(): String
 }
 
 fun retornaMenu(respostaMenu : String): String{
-    when(respostaMenu){
-        "1"-> return  ("${criaLegenda()}")
-        "2"->  return (" NÃO IMPLEMENTADO \n ${criaMenu()}")
-        "0"->  return " "
-        else -> return ("Resposta Inválida. \n ${criaMenu()}")
-    }
+
+    if(respostaMenu == "1") {
+        return ("Novo jogo") // retirei porque precisa de parametro para correr
+    }else if (respostaMenu == "2") {
+        return (" NÃO IMPLEMENTADO \n ${criaMenu()}") // validar o qq faz
+    }else if (respostaMenu =="0") {
+        return " "
+    }else return ("Resposta Inválida. \n ${criaMenu()}")
 }
 
 fun validanome(nome: String?) : Boolean {
@@ -89,13 +91,13 @@ fun lerNome(): String? {
         println("Introduza o seu nome:")
         nome = readLine()
 
-        if (validanome(nome)==false) {
+        if (!validanome(nome)) {
             println("Nome inválido, tenta outra vez.\n")
         }
 
-    } while (validanome(nome)==false)
+    } while (!validanome(nome))
 
-    return criaLegenda()
+    return nome //retorna nome
 
 }
 
@@ -142,25 +144,18 @@ fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
 fun pedeLegenda(): Boolean{
 
     println("Mostrar legenda (s/n)?")
-         val respostaLegenda= readln()
+         var respostaLegenda= readln()
 
-    if (respostaLegenda.isNullOrBlank()){
-        return false
+    while (respostaLegenda.isNullOrBlank()){ // assim o ciclo garante que vai estar sempre a pedir a legenda sempre que for a resposta errada
+        println("Resposta inválida. Mostrar legenda (s/n)?")
+        respostaLegenda = readln()
     }
 
-    if (respostaLegenda!=="n"){
+    if (respostaLegenda!=="n" || respostaLegenda!=="N"){
              return false
     }else{
-        if (respostaLegenda!=="N"){
-             return false
-        }else{
-            if (respostaLegenda!=="s"){
-                return true
-            }else{
-                if (respostaLegenda!=="S"){
-                    return true
-                }
-            }
+        if (respostaLegenda!=="s" || respostaLegenda!=="S"){
+             return true
         }
     }
 
@@ -169,16 +164,14 @@ fun pedeLegenda(): Boolean{
 fun confirmacaoLegenda(){
 
     if (pedeLegenda()==true){
-        return pedeLinhas()
+        pedeLinhas()
     } else{
         pedeLinhas()
     }
 }
 
 fun criaLegenda(numColumns: Int):String?{
-    if (pedeLegenda()== true){
-        return pedeLinhas()
-    }
+   // if (pedeLegenda()== true){ return pedeLinhas() }
     var aux = 0
     var textoApoio : String
     val alfabeto  ="A B C D E F G H I J K L M N O P Q R S T U V X Z"
@@ -186,7 +179,7 @@ fun criaLegenda(numColumns: Int):String?{
     var textoFinalLegenda = ""
 
     if (numColumns < 1) {
-        return null.toString()
+        return ""
     }
 
     do{
@@ -210,7 +203,7 @@ fun pedeLinhas(): String? {
     println("Quantas linhas?")
         var numLines=readln().toInt()
 
-    while (numLines!==1){
+    while (numLines != 1){ //  !== erro sintaxe
         println("Resposta invalida.")
 
         println("Quantas linhas?")
@@ -218,37 +211,119 @@ fun pedeLinhas(): String? {
          numLines=readln().toInt()
     }
 
-    return quantasColunas()
+    return numLines.toString() //aqui deve devolver o numero de linhas escolinhas pelo utilizador
 }
 
 fun quantasColunas(): String?{
-    println("Quantas linhas?")
-    var numLines=readln().toInt()
+    println("Quantas colunas?")
+    var numColunas=readln().toInt()
 
-    while(numLines<1){
+    while(numColunas<1){
         println("Resposta invalida.")
-        println("Quantas linhas?")
-        numLines=readln().toInt()
+        println("Quantas colunas?")
+        numColunas=readln().toInt()
     }
-    return ????
+    return numColunas.toString() //aqui deve devolver o numero de colunas escolinhas pelo utilizador
 }
 fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean = true): String {
 
-    var resultado = ""
-
-    if (legenda){
-        val legend = criaLegenda(numColumns)
-        if (legend != null){
-            resultado += legend +"\n"
+        if (!validaNumeroDeMinas(numLines, numColumns, numMines)) {
+            return ""
         }
+
+        var resultado = ""
+
+        if (legenda) {
+            resultado += criaLegenda(numColumns) + "\n"
+        }
+
+        val totalPosicoes = numLines * numColumns
+        var i = 0
+        var colAtual = 0
+        var minasColocadas = 0
+
+        while (i < totalPosicoes) {
+
+            var simbolo = '.'
+
+            if (i == 0) {
+                simbolo = 'J'
+            } else if (i == totalPosicoes - 1) {
+                simbolo = 'F'
+            } else {
+                if (minasColocadas < numMines) {
+                    simbolo = '*'
+                    minasColocadas = minasColocadas + 1
+                }
+            }
+
+            resultado += simbolo
+
+            i = i + 1
+            colAtual = colAtual + 1
+
+            if (colAtual < numColumns && i < totalPosicoes) {
+                resultado += " "
+            }
+
+            if (colAtual == numColumns && i < totalPosicoes) {
+                resultado += "\n"
+                colAtual = 0
+            }
+        }
+
+        return resultado
     }
-    return resultado
-}
+
 
 fun main() {
-    println(criaMenu())
-     val respostaMenu=readln()
-        println("${retornaMenu(respostaMenu)}")
+    println(criaMenu()) // ver como fazer print das funções sem print no main ? confirmar no enunciado
+    val opcao = readln()
 
+    if (opcao != "1") {     // logica mal implementada, menu não fica em loop em caso de resposta errada. do while ?
+        println(retornaMenu(opcao))
+    } else {
+        val nome = lerNome()
+        val mostraLegenda = pedeLegenda()
 
+        val numLines = pedeLinhas()!!.toInt()
+        val numColumns = quantasColunas()!!.toInt()
+
+        println("Quantas minas?")
+        var inputMinas = readLine()
+        var numMines: Int
+
+        if (inputMinas.isNullOrBlank()) {
+            val calc = calculaNumeroDeMinas(numLines, numColumns)
+            numMines = if (calc == null) 1 else calc
+        } else {
+            numMines = inputMinas.toInt()
+
+            while (!validaNumeroDeMinas(numLines, numColumns, numMines)) {
+                println("Número de minas inválido.")
+                println("Quantas minas? (ENTER para automático)")
+                inputMinas = readLine()
+
+                if (inputMinas.isNullOrBlank()) {
+                    val calc2 = calculaNumeroDeMinas(numLines, numColumns)
+                    numMines = if (calc2 == null) 1 else calc2
+                } else {
+                    numMines = inputMinas.toInt()
+                }
+            }
+        }
+
+        if (nome != null) {
+            println("Olá $nome")
+        }
+
+  /*      println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
+    } else if (opcao == "2"){
+
+    }else if (opcao == "0"){
+
+    }else {
+        println("Resposta Inválida.")
+    }*/
+    }
 }

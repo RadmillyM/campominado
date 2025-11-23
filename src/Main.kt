@@ -3,6 +3,8 @@ fun criaMenu(): String
     return ("\n Bem Vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
 }
 
+private const val RESPOSTA_INVALIDA = "Resposta invalida"
+
 fun retornaMenu(respostaMenu : String): String{
 
     if(respostaMenu == "1") {
@@ -11,7 +13,7 @@ fun retornaMenu(respostaMenu : String): String{
         return ("NÃO IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
         return " "
-    }else return ("Resposta invalida.")
+    }else return ("$RESPOSTA_INVALIDA.")
 }
 
 fun validanome(nome: String?) : Boolean {
@@ -204,7 +206,7 @@ fun pedeLinhas(): String? {
         var numLines=readln().toInt()
 
     while (numLines != 1){ //  !== erro sintaxe
-        println("Resposta invalida.")
+        println("$RESPOSTA_INVALIDA.")
 
         println("Quantas linhas?")
 
@@ -219,7 +221,7 @@ fun quantasColunas(): String?{
     var numColunas=readln().toInt()
 
     while(numColunas<1){
-        println("Resposta invalida.")
+        println("$RESPOSTA_INVALIDA.")
         println("Quantas colunas?")
         numColunas=readln().toInt()
     }
@@ -238,18 +240,18 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
         }
 
         val totalPosicoes = numLines * numColumns
-        var i = 0
+        var contador_CriaTerreno = 0
         var colAtual = 0
         var minasColocadas = 0
 
 
-        while (i < totalPosicoes) {
+        while (contador_CriaTerreno < totalPosicoes) {
 
             var simbolo = '.'
 
-            if (i == 0) {
+            if (contador_CriaTerreno == 0) {
                 simbolo = 'J'
-            } else if (i == totalPosicoes - 1) {
+            } else if (contador_CriaTerreno == totalPosicoes - 1) {
                 simbolo = 'F'
             } else {
                 if (minasColocadas < numMines) {
@@ -260,14 +262,14 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
             resultado += simbolo
 
-            i = i + 1
+            contador_CriaTerreno = contador_CriaTerreno + 1
             colAtual = colAtual + 1
 
-            if (colAtual < numColumns && i < totalPosicoes) {
+            if (colAtual < numColumns && contador_CriaTerreno < totalPosicoes) {
                 resultado += " "
             }
 
-            if (colAtual == numColumns && i < totalPosicoes) {
+            if (colAtual == numColumns && contador_CriaTerreno < totalPosicoes) {
                 resultado += "\n"
                 colAtual = 0
             }
@@ -286,7 +288,6 @@ fun main() {
         println(retornaMenu(opcao))
         println(criaMenu())
         opcao= readln()
-
     }
 
     if (opcao != "1" ) {

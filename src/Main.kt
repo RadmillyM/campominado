@@ -317,8 +317,8 @@ fun main() {
             println("Olá $nome")
         }
 
-  /*      println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
-    } else if (opcao == "2"){
+        println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
+  /*  } else if (opcao == "2"){
 
     }else if (opcao == "0"){
 

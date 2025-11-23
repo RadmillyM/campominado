@@ -1,5 +1,4 @@
-fun criaMenu(): String
-{
+fun criaMenu(): String {
     return ("\n Bem Vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
 }
 
@@ -13,10 +12,9 @@ fun retornaMenu(respostaMenu : String): String{
         return ("NÃO IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
         return " "
-    }else return ("$RESPOSTA_INVALIDA.")
+    }else return ("Resposta invalida.")
 }
-
-fun validanome(nome: String?) : Boolean {
+fun validaNome(nome: String?, minSize: Int =3) : Boolean {
 
     if (nome.isNullOrBlank()){
         return false
@@ -288,6 +286,7 @@ fun main() {
         println(retornaMenu(opcao))
         println(criaMenu())
         opcao= readln()
+
     }
 
     if (opcao != "1" ) {

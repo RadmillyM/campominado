@@ -1,5 +1,5 @@
 fun criaMenu(): String {
-    return ("\n Bem Vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
+    return ("\n Bem vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
 }
 //constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"

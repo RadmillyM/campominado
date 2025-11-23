@@ -1,32 +1,49 @@
 fun criaMenu(): String {
-    return ("\n Bem Vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
+    return ("\nBem vindo ao Campo DEISIado \n\n1 - Novo Jogo \n\n2 - Ler Jogo \n\n0 - Sair \n\n")
 }
 
 fun retornaMenu(respostaMenu : String): String{
 
-    if(respostaMenu == "1") {
+    return if(respostaMenu == "1") {
         return ("Novo jogo") // retirei porque precisa de parametro para correr
     }else if (respostaMenu == "2") {
         return ("NÃO IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
         return " "
-    }else return ("Resposta invalida.")
+    }
+    else ("Resposta invalida.")
 }
+
 fun validaNome(nome: String?, minSize: Int =3) : Boolean {
 
-    if (nome.isNullOrBlank()){
-        return false
-    } else {
-        if ( nome.length<7) {
-            return false
-             } else{
-                if (temMaiuscula(nome)&& temEspaco(nome)== true) {
-                     return true
-                }
-                     return false
-            }
+    if (nome.isNullOrBlank()) return false
 
+    if (!temEspaco(nome)) return false
+
+    val pos = ondeTemEspaco(nome)
+    if (pos <= 0 || pos >= nome.length - 1) return false
+
+    val tamanhoPrimeira = pos
+    val tamanhoSegunda = nome.length - pos - 1
+    if (tamanhoPrimeira < minSize) return false
+    if (tamanhoSegunda < minSize) return false
+
+    if (!temMaiuscula(nome)) return false
+
+    var indice = 0
+    var espacos = 0
+    while (indice < nome.length) {
+        val letra = nome[indice]
+        if (letra == ' ') {
+            espacos = espacos + 1
+        } else {
+            if (!letra.isLetter()) return false
         }
+        indice = indice + 1
+    }
+    if (espacos != 1) return false
+
+    return true
     }
 
 
@@ -49,16 +66,15 @@ fun ondeTemEspaco(nome: String?) : Int {
 }
 
 fun temMaiuscula(nome: String?) : Boolean {
-    if (nome.isNullOrBlank()) {
-        return false
-    }
-    val temnomeMaiusculo = nome[0].isUpperCase()
-    val temApelidoMaiusculo = nome[ondeTemEspaco(nome)+1].isUpperCase()
+    if (nome.isNullOrBlank()) return false
 
-    if (temApelidoMaiusculo && temnomeMaiusculo == true){
-        return true
-    }
-    return false
+    val pos = ondeTemEspaco(nome)
+    if (pos == -1 || pos == nome.length - 1) return false
+
+    val nomeUpper = nome[0].isUpperCase()
+    val apelidoApper = nome[pos + 1].isUpperCase()
+
+    return nomeUpper && apelidoApper
 }
 
 fun temEspaco(nome: String?) : Boolean {
@@ -82,7 +98,7 @@ fun temEspaco(nome: String?) : Boolean {
     }
     return false
 }
-fun lerNome() String {
+fun lerNome() : String? {
     var nome: String?
     do {
         println("Introduza o seu nome:")
@@ -142,21 +158,16 @@ fun pedeLegenda(): Boolean{
     println("Mostrar legenda (s/n)?")
          var respostaLegenda= readln()
 
-    while (respostaLegenda.isNullOrBlank()){ // assim o ciclo garante que vai estar sempre a pedir a legenda sempre que for a resposta errada
+    while (respostaLegenda.isNullOrBlank() || (respostaLegenda != "s" && respostaLegenda != "S" && respostaLegenda != "n" && respostaLegenda != "N")){ // assim o ciclo garante que vai estar sempre a pedir a legenda sempre que for a resposta errada
         println("Resposta inválida. Mostrar legenda (s/n)?")
         respostaLegenda = readln()
     }
-
-    if (respostaLegenda!=="n" || respostaLegenda!=="N"){
-             return false
-    }else{
-        if (respostaLegenda!=="s" || respostaLegenda!=="S"){
-             return true
-        }
-    }
-
+    if (respostaLegenda=="s" || respostaLegenda=="S"){
+        return true
+    }else (respostaLegenda == "n" || respostaLegenda == "N")
     return false
 }
+
 fun confirmacaoLegenda(){
 
     if (pedeLegenda()==true){
@@ -198,7 +209,7 @@ fun pedeLinhas(): String? {
     println("Quantas linhas?")
         var numLines=readln().toInt()
 
-    while (numLines != 1){ //  !== erro sintaxe
+    while (numLines < 1){ //  !== erro sintaxe
         println("Resposta invalida.")
 
         println("Quantas linhas?")
@@ -228,7 +239,7 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
         var resultado = ""
 
         if (legenda) {
-            resultado += criaLegenda(numColumns) + "\n"
+            resultado +=  " " + (criaLegenda(numColumns) )+ "    \n"
         }
 
         val totalPosicoes = numLines * numColumns
@@ -238,12 +249,12 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
         while (indice < totalPosicoes) {
 
-            var simbolo = '.'
+            var simbolo = ' '
 
             if (indice == 0) {
                 simbolo = 'J'
             } else if (indice == totalPosicoes - 1) {
-                simbolo = 'F'
+                simbolo = 'f'
             } else {
                 if (minasColocadas < numMines) {
                     simbolo = '*'
@@ -257,7 +268,7 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
             colAtual = colAtual + 1
 
             if (colAtual < numColumns && indice < totalPosicoes) {
-                resultado += " "
+                resultado += " | "
             }
 
             if (colAtual == numColumns && indice < totalPosicoes) {

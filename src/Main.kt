@@ -1,5 +1,7 @@
+import kotlin.system.exitProcess
+
 fun criaMenu(): String {
-    return ("\nBem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair\n")
+    return ("\nBem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair \n")
 }
 //constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
@@ -11,9 +13,10 @@ fun retornaMenu(respostaMenu : String): String{
     }else if (respostaMenu == "2") {
         return ("NÃO IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
-        return " "
+        return ""
     }else return ("$RESPOSTA_INVALIDA.")
 }
+
 
 fun validaNome(nome: String?, minSize: Int =3) : Boolean {
 
@@ -103,11 +106,11 @@ fun temEspaco(nome: String?) : Boolean {
 fun lerNome() : String? {
     var nome: String?
     do {
-        println("Introduza o seu nome:")
+        print("Introduza o seu nome:")
         nome = readLine()
 
         if (!validaNome(nome)) {
-            println("Nome inválido, tenta outra vez.\n")
+            print("Nome inválido, tenta outra vez.\n")
         }
 
     } while (!validaNome(nome))
@@ -158,11 +161,11 @@ fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
 }
 fun pedeLegenda(): Boolean{
 
-    println("Mostrar legenda (s/n)?")
+    print("Mostrar legenda (s/n)?")
          var respostaLegenda= readln()
 
     while (respostaLegenda.isNullOrBlank() || (respostaLegenda != "s" && respostaLegenda != "S" && respostaLegenda != "n" && respostaLegenda != "N")){ // assim o ciclo garante que vai estar sempre a pedir a legenda sempre que for a resposta errada
-        println("Resposta inválida. Mostrar legenda (s/n)?")
+        print("Resposta inválida. Mostrar legenda (s/n)?")
         respostaLegenda = readln()
     }
     if (respostaLegenda=="s" || respostaLegenda=="S"){
@@ -200,13 +203,13 @@ fun criaLegenda(numColumns: Int):String?{
     return textoFinalLegenda
 }
 fun pedeLinhas(): String? {
-    println("Quantas linhas?")
+    print("Quantas linhas?")
         var numLines=readln().toInt()
 
     while (numLines < 0){ //  !== erro sintaxe
-        println("$RESPOSTA_INVALIDA.")
+        print("$RESPOSTA_INVALIDA.")
 
-        println("Quantas linhas?")
+        print("Quantas linhas?")
 
          numLines=readln().toInt()
     }
@@ -214,12 +217,12 @@ fun pedeLinhas(): String? {
     return numLines.toString() //aqui deve devolver o número de linhas escolinhas pelo utilizador
 }
 fun quantasColunas(): String?{
-    println("Quantas colunas?")
+    print("Quantas colunas?")
     var numColunas=readln().toInt()
 
     while(numColunas<1){
-        println("$RESPOSTA_INVALIDA.")
-        println("Quantas colunas?")
+        print("$RESPOSTA_INVALIDA.")
+        print("Quantas colunas?")
         numColunas=readln().toInt()
     }
     return numColunas.toString() //aqui deve devolver o numero de colunas escolinhas pelo utilizador
@@ -329,7 +332,7 @@ fun main() {
     }else if (opcao == "0"){
 
     }else {
-        println("Resposta Inválida.")
+        print("Resposta Inválida.")
     }*/
     }
 }

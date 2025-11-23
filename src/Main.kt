@@ -1,15 +1,16 @@
 fun criaMenu(): String {
     return ("\n Bem Vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
 }
+
 fun retornaMenu(respostaMenu : String): String{
 
     if(respostaMenu == "1") {
         return ("Novo jogo") // retirei porque precisa de parametro para correr
     }else if (respostaMenu == "2") {
-        return (" NÃO IMPLEMENTADO \n ${criaMenu()}") // validar o qq faz
+        return ("NÃO IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
         return " "
-    }else return ("Resposta Inválida. \n ${criaMenu()}")
+    }else return ("Resposta invalida.")
 }
 fun validaNome(nome: String?, minSize: Int =3) : Boolean {
 
@@ -18,14 +19,17 @@ fun validaNome(nome: String?, minSize: Int =3) : Boolean {
     } else {
         if ( nome.length<7) {
             return false
-             } else {
-            if (temMaiuscula(nome) && temEspaco(nome) == true) {
-                return true
+             } else{
+                if (temMaiuscula(nome)&& temEspaco(nome)== true) {
+                     return true
+                }
+                     return false
             }
+
         }
     }
-    return false
-}
+
+
 fun ondeTemEspaco(nome: String?) : Int {
     if (nome.isNullOrBlank()) {
         return -1
@@ -43,6 +47,7 @@ fun ondeTemEspaco(nome: String?) : Int {
     }
     return -1
 }
+
 fun temMaiuscula(nome: String?) : Boolean {
     if (nome.isNullOrBlank()) {
         return false
@@ -55,6 +60,7 @@ fun temMaiuscula(nome: String?) : Boolean {
     }
     return false
 }
+
 fun temEspaco(nome: String?) : Boolean {
     if (nome.isNullOrBlank()) {
         return false
@@ -90,6 +96,7 @@ fun lerNome(string: String): Boolean {
     return true //retorna nome
 
 }
+
 fun validaNumeroDeMinas(numLines: Int,numColumns: Int,numMines: Int): Boolean{
 
     val casaVazias : Int = (numLines * numColumns) - 2
@@ -99,6 +106,7 @@ fun validaNumeroDeMinas(numLines: Int,numColumns: Int,numMines: Int): Boolean{
     }
     return true
 }
+
 fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
     if (numLines < 1 || numColumns < 1) {
         return null
@@ -157,6 +165,7 @@ fun confirmacaoLegenda(){
         pedeLinhas()
     }
 }
+
 fun criaLegenda(numColumns: Int):String?{
    // if (pedeLegenda()== true){ return pedeLinhas() }
     var aux = 0
@@ -259,11 +268,21 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
         return resultado
     }
+
+
 fun main() {
     println(criaMenu()) // ver como fazer print das funções sem print no main ? confirmar no enunciado
-    val opcao = readln()
+    var opcao = readln()
 
-    if (opcao != "1") {     // logica mal implementada, menu não fica em loop em caso de resposta errada. do while ?
+    while (opcao != "0" && opcao != "1"){
+
+        println(retornaMenu(opcao))
+        println(criaMenu())
+        opcao= readln()
+
+    }
+
+    if (opcao != "1" ) {
         println(retornaMenu(opcao))
     } else {
         val nome = lerNome()
@@ -294,10 +313,6 @@ fun main() {
                     numMines = inputMinas.toInt()
                 }
             }
-        }
-
-        if (nome != null) {
-            println("Olá $nome")
         }
 
         println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))

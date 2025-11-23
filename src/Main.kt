@@ -282,8 +282,11 @@ fun main() {
     var opcao = readln()
 
     while (opcao != "0" && opcao != "1"){
+
+        println(retornaMenu(opcao))
         println(criaMenu())
         opcao= readln()
+
     }
 
     if (opcao != "1" ) {

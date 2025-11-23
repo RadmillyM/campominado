@@ -82,7 +82,7 @@ fun temEspaco(nome: String?) : Boolean {
     }
     return false
 }
-fun lerNome(string: String): Boolean {
+fun lerNome() String {
     var nome: String?
     do {
         println("Introduza o seu nome:")
@@ -93,7 +93,7 @@ fun lerNome(string: String): Boolean {
         }
 
     } while (!validaNome(nome))
-    return true //retorna nome
+    return nome //retorna nome
 
 }
 

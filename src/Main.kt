@@ -1,17 +1,18 @@
 fun criaMenu(): String {
-    return ("\nBem vindo ao Campo DEISIado \n\n1 - Novo Jogo \n\n2 - Ler Jogo \n\n0 - Sair \n\n")
+    return ("Bem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair")
 }
+//constante feita para a string de resposta inválida
+private const val RESPOSTA_INVALIDA = "Resposta invalida"
 
 fun retornaMenu(respostaMenu : String): String{
 
-    return if(respostaMenu == "1") {
+    if(respostaMenu == "1") {
         return ("Novo jogo") // retirei porque precisa de parametro para correr
     }else if (respostaMenu == "2") {
         return ("NÃO IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
         return " "
-    }
-    else ("Resposta invalida.")
+    }else return ("$RESPOSTA_INVALIDA.")
 }
 
 fun validaNome(nome: String?, minSize: Int =3) : Boolean {
@@ -48,6 +49,7 @@ fun validaNome(nome: String?, minSize: Int =3) : Boolean {
 
 
 fun ondeTemEspaco(nome: String?) : Int {
+    // verifica se há espaços, para sabermos se há sobrenome
     if (nome.isNullOrBlank()) {
         return -1
     }
@@ -109,6 +111,7 @@ fun lerNome() : String? {
         }
 
     } while (!validaNome(nome))
+
     return nome //retorna nome
 
 }
@@ -168,15 +171,6 @@ fun pedeLegenda(): Boolean{
     return false
 }
 
-fun confirmacaoLegenda(){
-
-    if (pedeLegenda()==true){
-        pedeLinhas()
-    } else{
-        pedeLinhas()
-    }
-}
-
 fun criaLegenda(numColumns: Int):String?{
    // if (pedeLegenda()== true){ return pedeLinhas() }
     var aux = 0
@@ -210,21 +204,21 @@ fun pedeLinhas(): String? {
         var numLines=readln().toInt()
 
     while (numLines < 1){ //  !== erro sintaxe
-        println("Resposta invalida.")
+        println("$RESPOSTA_INVALIDA.")
 
         println("Quantas linhas?")
 
          numLines=readln().toInt()
     }
 
-    return numLines.toString() //aqui deve devolver o numero de linhas escolinhas pelo utilizador
+    return numLines.toString() //aqui deve devolver o número de linhas escolinhas pelo utilizador
 }
 fun quantasColunas(): String?{
     println("Quantas colunas?")
     var numColunas=readln().toInt()
 
     while(numColunas<1){
-        println("Resposta invalida.")
+        println("$RESPOSTA_INVALIDA.")
         println("Quantas colunas?")
         numColunas=readln().toInt()
     }
@@ -243,17 +237,18 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
         }
 
         val totalPosicoes = numLines * numColumns
-        var indice = 0
+        var contadorCriaterreno = 0
         var colAtual = 0
         var minasColocadas = 0
 
-        while (indice < totalPosicoes) {
 
-            var simbolo = ' '
+        while (contadorCriaterreno < totalPosicoes) {
 
-            if (indice == 0) {
+            var simbolo = '.'
+
+            if (contadorCriaterreno == 0) {
                 simbolo = 'J'
-            } else if (indice == totalPosicoes - 1) {
+            } else if (contadorCriaterreno == totalPosicoes - 1) {
                 simbolo = 'f'
             } else {
                 if (minasColocadas < numMines) {
@@ -264,14 +259,14 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
             resultado += simbolo
 
-            indice = indice + 1
+            contadorCriaterreno = contadorCriaterreno + 1
             colAtual = colAtual + 1
 
-            if (colAtual < numColumns && indice < totalPosicoes) {
+            if (colAtual < numColumns && contadorCriaterreno < totalPosicoes) {
                 resultado += " | "
             }
 
-            if (colAtual == numColumns && indice < totalPosicoes) {
+            if (colAtual == numColumns && contadorCriaterreno < totalPosicoes) {
                 resultado += "\n"
                 colAtual = 0
             }

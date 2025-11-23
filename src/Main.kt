@@ -1,5 +1,5 @@
 fun criaMenu(): String {
-    return ("Bem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair")
+    return ("\nBem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair\n")
 }
 //constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
@@ -203,7 +203,7 @@ fun pedeLinhas(): String? {
     println("Quantas linhas?")
         var numLines=readln().toInt()
 
-    while (numLines < 1){ //  !== erro sintaxe
+    while (numLines < 0){ //  !== erro sintaxe
         println("$RESPOSTA_INVALIDA.")
 
         println("Quantas linhas?")
@@ -244,7 +244,7 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
         while (contadorCriaterreno < totalPosicoes) {
 
-            var simbolo = '.'
+            var simbolo = ' '
 
             if (contadorCriaterreno == 0) {
                 simbolo = 'J'
@@ -252,9 +252,11 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
                 simbolo = 'f'
             } else {
                 if (minasColocadas < numMines) {
-                    simbolo = '*'
                     minasColocadas = minasColocadas + 1
-                }
+                    simbolo = '*'
+                } else ' '
+
+
             }
 
             resultado += simbolo
@@ -277,19 +279,19 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
 
 fun main() {
-    println(criaMenu()) // ver como fazer print das funções sem print no main ? confirmar no enunciado
+    print(criaMenu()) // ver como fazer print das funções sem print no main ? confirmar no enunciado
     var opcao = readln()
 
     while (opcao != "0" && opcao != "1"){
 
-        println(retornaMenu(opcao))
-        println(criaMenu())
+        print(retornaMenu(opcao))
+        print(criaMenu())
         opcao= readln()
 
     }
 
     if (opcao != "1" ) {
-        println(retornaMenu(opcao))
+        print(retornaMenu(opcao))
     } else {
         val nome = lerNome()
         val mostraLegenda = pedeLegenda()
@@ -297,7 +299,7 @@ fun main() {
         val numLines = pedeLinhas()!!.toInt()
         val numColumns = quantasColunas()!!.toInt()
 
-        println("Quantas minas?")
+        print("Quantas minas?")
         var inputMinas = readLine()
         var numMines: Int
 
@@ -308,8 +310,8 @@ fun main() {
             numMines = inputMinas.toInt()
 
             while (!validaNumeroDeMinas(numLines, numColumns, numMines)) {
-                println("Número de minas inválido.")
-                println("Quantas minas? (ENTER para automático)")
+                print("Número de minas inválido.")
+                print("Quantas minas? (ENTER para automático)")
                 inputMinas = readLine()
 
                 if (inputMinas.isNullOrBlank()) {
@@ -321,7 +323,7 @@ fun main() {
             }
         }
 
-        println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
+        print(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
   /*  } else if (opcao == "2"){
 
     }else if (opcao == "0"){

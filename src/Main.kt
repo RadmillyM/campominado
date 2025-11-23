@@ -11,7 +11,7 @@ fun retornaMenu(respostaMenu : String): String{
         return " "
     }else return ("Resposta Inválida. \n ${criaMenu()}")
 }
-fun validanome(nome: String?) : Boolean {
+fun validaNome(nome: String?, minSize: Int =3) : Boolean {
 
     if (nome.isNullOrBlank()){
         return false
@@ -76,19 +76,18 @@ fun temEspaco(nome: String?) : Boolean {
     }
     return false
 }
-fun lerNome(): String? {
+fun lerNome(string: String): Boolean {
     var nome: String?
     do {
         println("Introduza o seu nome:")
         nome = readLine()
 
-        if (!validanome(nome)) {
+        if (!validaNome(nome)) {
             println("Nome inválido, tenta outra vez.\n")
         }
 
-    } while (!validanome(nome))
-
-    return nome //retorna nome
+    } while (!validaNome(nome))
+    return true //retorna nome
 
 }
 fun validaNumeroDeMinas(numLines: Int,numColumns: Int,numMines: Int): Boolean{
@@ -224,17 +223,17 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
         }
 
         val totalPosicoes = numLines * numColumns
-        var i = 0
+        var indice = 0
         var colAtual = 0
         var minasColocadas = 0
 
-        while (i < totalPosicoes) {
+        while (indice < totalPosicoes) {
 
             var simbolo = '.'
 
-            if (i == 0) {
+            if (indice == 0) {
                 simbolo = 'J'
-            } else if (i == totalPosicoes - 1) {
+            } else if (indice == totalPosicoes - 1) {
                 simbolo = 'F'
             } else {
                 if (minasColocadas < numMines) {
@@ -245,14 +244,14 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
             resultado += simbolo
 
-            i = i + 1
+            indice = indice + 1
             colAtual = colAtual + 1
 
-            if (colAtual < numColumns && i < totalPosicoes) {
+            if (colAtual < numColumns && indice < totalPosicoes) {
                 resultado += " "
             }
 
-            if (colAtual == numColumns && i < totalPosicoes) {
+            if (colAtual == numColumns && indice < totalPosicoes) {
                 resultado += "\n"
                 colAtual = 0
             }

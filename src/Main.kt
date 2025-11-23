@@ -5,24 +5,15 @@ fun criaMenu(): String
 
 fun retornaMenu(respostaMenu : String): String{
 
-    //Esta função serve para ler a resposta ao MENU e voltar algo perante sua resposta. 1- Vai seguir com o fluxo, 2- Vai fazer voltar ao MENU, 0- vai sair. Toda outra coisa vai ser lida como inválida.
+    TODO("Loopar o menu")
 
-//    when(respostaMenu){
-//        "1"-> return  ("${lerNome()}")
-//        "2"->  return (" NÃO IMPLEMENTADO )
-//        "0"->  return " "
-//        else -> return ("Resposta Inválida. )
-//    }
-    var opcaoValida= false
-    while (opcaoValida==false
-    ){
-            when(respostaMenu){
-        "1"-> return  ("${lerNome()}")
-        "2"->  return (" NÃO IMPLEMENTADO )
-        "0"->  return " "
-        else -> return ("Resposta Inválida. )
-    }
-    }
+    if(respostaMenu == "1") {
+        return ("Novo jogo") // retirei porque precisa de parametro para correr
+    }else if (respostaMenu == "2") {
+        return (" NÃO IMPLEMENTADO \n ${criaMenu()}") // validar o qq faz
+    }else if (respostaMenu =="0") {
+        return " "
+    }else return ("Resposta Inválida. \n ${criaMenu()}")
 }
 
 fun validanome(nome: String?) : Boolean {
@@ -253,6 +244,7 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
         var colAtual = 0
         var minasColocadas = 0
 
+    TODO("Não está gerando as barras.")
         while (i < totalPosicoes) {
 
             var simbolo = '.'

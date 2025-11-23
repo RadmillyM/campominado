@@ -1,7 +1,7 @@
 fun criaMenu(): String {
     return ("\n Bem Vindo ao Campo DEISIado \n \n 1 - Novo Jogo \n 2 - Ler Jogo \n 0 - Sair \n")
 }
-
+//constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
 
 fun retornaMenu(respostaMenu : String): String{
@@ -14,12 +14,12 @@ fun retornaMenu(respostaMenu : String): String{
         return " "
     }else return ("Resposta invalida.")
 }
-fun validaNome(nome: String?, minSize: Int =3) : Boolean {
-
+fun validaNome(nome: String?, minSize: Int =4) : Boolean {
+//usa do retorno da ondeTemEspaco e temMaiuscula para ferificar se o nome é válido
     if (nome.isNullOrBlank()){
         return false
     } else {
-        if ( nome.length<7) {
+        if ( nome.length<minSize) {
             return false
              } else{
                 if (temMaiuscula(nome)&& temEspaco(nome)== true) {
@@ -33,6 +33,7 @@ fun validaNome(nome: String?, minSize: Int =3) : Boolean {
 
 
 fun ondeTemEspaco(nome: String?) : Int {
+    // verifica se há espaços, para sabermos se há sobrenome
     if (nome.isNullOrBlank()) {
         return -1
     }
@@ -51,6 +52,7 @@ fun ondeTemEspaco(nome: String?) : Int {
 }
 
 fun temMaiuscula(nome: String?) : Boolean {
+    // Verifica se há maiusculas
     if (nome.isNullOrBlank()) {
         return false
     }
@@ -91,11 +93,11 @@ fun lerNome(): String? {
         println("Introduza o seu nome:")
         nome = readLine()
 
-        if (!validanome(nome)) {
+        if (!validaNome(nome)) {
             println("Nome inválido, tenta outra vez.\n")
         }
 
-    } while (!validanome(nome))
+    } while (!validaNome(nome))
 
     return nome //retorna nome
 
@@ -161,17 +163,9 @@ fun pedeLegenda(): Boolean{
 
     return false
 }
-fun confirmacaoLegenda(){
-
-    if (pedeLegenda()==true){
-        pedeLinhas()
-    } else{
-        pedeLinhas()
-    }
-}
 
 fun criaLegenda(numColumns: Int):String?{
-   // if (pedeLegenda()== true){ return pedeLinhas() }
+
     var aux = 0
     var textoApoio : String
     val alfabeto  ="A B C D E F G H I J K L M N O P Q R S T U V X Z"
@@ -211,7 +205,7 @@ fun pedeLinhas(): String? {
          numLines=readln().toInt()
     }
 
-    return numLines.toString() //aqui deve devolver o numero de linhas escolinhas pelo utilizador
+    return numLines.toString() //aqui deve devolver o número de linhas escolinhas pelo utilizador
 }
 
 fun quantasColunas(): String?{
@@ -238,18 +232,18 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
         }
 
         val totalPosicoes = numLines * numColumns
-        var contador_CriaTerreno = 0
+        var contadorCriaterreno = 0
         var colAtual = 0
         var minasColocadas = 0
 
 
-        while (contador_CriaTerreno < totalPosicoes) {
+        while (contadorCriaterreno < totalPosicoes) {
 
             var simbolo = '.'
 
-            if (contador_CriaTerreno == 0) {
+            if (contadorCriaterreno == 0) {
                 simbolo = 'J'
-            } else if (contador_CriaTerreno == totalPosicoes - 1) {
+            } else if (contadorCriaterreno == totalPosicoes - 1) {
                 simbolo = 'F'
             } else {
                 if (minasColocadas < numMines) {
@@ -260,14 +254,14 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
             resultado += simbolo
 
-            contador_CriaTerreno = contador_CriaTerreno + 1
+            contadorCriaterreno = contadorCriaterreno + 1
             colAtual = colAtual + 1
 
-            if (colAtual < numColumns && contador_CriaTerreno < totalPosicoes) {
+            if (colAtual < numColumns && contadorCriaterreno < totalPosicoes) {
                 resultado += " "
             }
 
-            if (colAtual == numColumns && contador_CriaTerreno < totalPosicoes) {
+            if (colAtual == numColumns && contadorCriaterreno < totalPosicoes) {
                 resultado += "\n"
                 colAtual = 0
             }

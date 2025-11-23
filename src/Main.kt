@@ -5,15 +5,13 @@ fun criaMenu(): String
 
 fun retornaMenu(respostaMenu : String): String{
 
-    TODO("Loopar o menu")
-
     if(respostaMenu == "1") {
         return ("Novo jogo") // retirei porque precisa de parametro para correr
     }else if (respostaMenu == "2") {
-        return (" NÃO IMPLEMENTADO \n ${criaMenu()}") // validar o qq faz
+        return ("NÃO IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
         return " "
-    }else return ("Resposta Inválida. \n ${criaMenu()}")
+    }else return ("Resposta invalida.")
 }
 
 fun validanome(nome: String?) : Boolean {
@@ -244,7 +242,7 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
         var colAtual = 0
         var minasColocadas = 0
 
-    TODO("Não está gerando as barras.")
+
         while (i < totalPosicoes) {
 
             var simbolo = '.'
@@ -281,9 +279,14 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
 fun main() {
     println(criaMenu()) // ver como fazer print das funções sem print no main ? confirmar no enunciado
-    val opcao = readln()
+    var opcao = readln()
 
-    if (opcao != "1") {     // logica mal implementada, menu não fica em loop em caso de resposta errada. do while ?
+    while (opcao != "0" && opcao != "1"){
+        println(criaMenu())
+        opcao= readln()
+    }
+
+    if (opcao != "1" ) {
         println(retornaMenu(opcao))
     } else {
         val nome = lerNome()
@@ -314,10 +317,6 @@ fun main() {
                     numMines = inputMinas.toInt()
                 }
             }
-        }
-
-        if (nome != null) {
-            println("Olá $nome")
         }
 
         println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))

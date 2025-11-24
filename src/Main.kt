@@ -331,4 +331,5 @@ fun main() {
             println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
         }
     }
+    }
 }

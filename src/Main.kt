@@ -1,15 +1,21 @@
 import kotlin.system.exitProcess
 
-fun criaMenu(): String {
-    return "\nBem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair\n"
+private const val MENU =
+            "\nBem vindo ao Campo DEISIado\n" +
+            "1 - Novo Jogo\n" +
+            "2 - Ler Jogo\n" +
+            "0 - Sair\n"
 
+fun criaMenu(): String {
+    return MENU
 }
+
 //constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
 
 private const val NAO_IMPLEMENTADO = "NÃO IMPLEMENTADO"
 
-fun retornaMenu(respostaMenu : String): String{
+/*fun retornaMenu(respostaMenu : String): String{
 
     if(respostaMenu == "1") {
         return ("Novo jogo") // retirei porque precisa de parametro para correr
@@ -18,7 +24,8 @@ fun retornaMenu(respostaMenu : String): String{
     }else if (respostaMenu =="0") {
         return " "
     }else return ("$RESPOSTA_INVALIDA")
-}
+}*/
+
 fun validaNome(nome: String?, minSize: Int =4) : Boolean {
 //usa do retorno da ondeTemEspaco e temMaiuscula para ferificar se o nome é válido
     if (nome.isNullOrBlank()){
@@ -117,22 +124,29 @@ fun validaNumeroDeMinas(numLines: Int,numColumns: Int,numMines: Int): Boolean{
     return true
 }
 
-fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
+fun calculaNumeroDeMinas(numLines: Int, numColumns: Int): Int? {
     if (numLines < 1 || numColumns < 1) return null
 
     val casaVazias = numLines * numColumns - 2
     if (casaVazias <= 0) return null
 
-    return when (casaVazias) {
-        in 1..13  -> (casaVazias + 1) / 2
-        in 14..20 -> 6
-        in 21..40 -> 9
-        in 41..60 -> 12
-        in 61..79 -> 19
-        else -> null
+    return if (casaVazias == 1) {
+        1
+    } else if (casaVazias in 2..5) {
+        2
+    } else if (casaVazias in 6..10) {
+        3
+    } else if (casaVazias in 11..20) {
+        6
+    } else if (casaVazias in 21..50) {
+        10
+    } else if (casaVazias >= 51) {   // equivalente ao teu "51.."
+        15
+    } else {
+        null
     }
-
 }
+
 fun pedeLegenda(): Boolean{
 
     println("Mostrar legenda (s/n)?")
@@ -257,7 +271,9 @@ fun criaTerreno(numLines: Int, numColumns: Int, numMines: Int, legenda : Boolean
             resultado += " "
         }
 
-        if (linha < numLines) resultado += "\n"
+        if (linha < numLines){
+            resultado += "\n"
+        }
 
         linha++
     }
@@ -279,10 +295,11 @@ fun pedeMinas(numLines: Int, numColumns: Int): Int{
             print("Quantas minas? (ou enter para o valor por omissão)")
             inputMinas = readLine()
 
-            numMines = if (inputMinas.isNullOrBlank())
+            numMines = if (inputMinas.isNullOrBlank()){
                 calculaNumeroDeMinas(numLines, numColumns) ?: 1
-            else
+            }else {
                 inputMinas.toInt()
+            }
         }
     }
 
@@ -294,7 +311,7 @@ fun main() {
     var opcao: String
 
     do {
-        print(criaMenu())
+        println(criaMenu())
         opcao = readln()
 
         if (opcao != "0" && opcao != "1" && opcao != "2") {
@@ -313,10 +330,8 @@ fun main() {
         "1" -> {
             lerNome()
             val mostraLegenda = pedeLegenda()
-
             val numLines = pedeLinhas()!!.toInt()
             val numColumns = quantasColunas()!!.toInt()
-
             val numMines = pedeMinas(numLines, numColumns)
 
             println(criaTerreno(numLines, numColumns, numMines, mostraLegenda))

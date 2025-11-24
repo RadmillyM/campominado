@@ -4,7 +4,7 @@ fun criaMenu(): String {
     return "\nBem vindo ao Campo DEISIado\n" +
             "1 - Novo Jogo\n" +
             "2 - Ler Jogo\n" +
-            "0 - Sair\n"
+            "0 - Sair \n"
 }
 //constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
@@ -153,7 +153,7 @@ fun pedeLegenda(): Boolean{
          var respostaLegenda= readln()
 
     while (respostaLegenda.isNullOrBlank() || (respostaLegenda != "s" && respostaLegenda != "S"
-                && respostaLegenda != "n" && respostaLegenda != "N")){ // assim o ciclo garante que vai estar sempre a pedir a legenda sempre que for a resposta errada
+                && respostaLegenda != "n" && respostaLegenda != "N")){
         print("Resposta inválida. Mostrar legenda (s/n)?")
         respostaLegenda = readln()
     }
@@ -229,11 +229,13 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
     val total = numLines * numColumns
     var posicao = 0
     var mines = 0
-    var line = 1
+    var linha = 1
 
-    while (line <= numLines) {
+    while (linha <= numLines) {
 
-        if (legenda) resultado += " $line  "
+        if (legenda){
+            resultado += " $linha  "
+        }
         else resultado += " "
 
         var coluna = 1
@@ -253,18 +255,24 @@ fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean
 
             resultado += letra
 
-            if (coluna < numColumns) resultado += " | "
+            if (coluna < numColumns) {
+                resultado += " | "
+            }
 
             posicao++
             coluna++
         }
 
-        if (legenda) resultado += "    "
-        else resultado += " "
+        if (legenda) {
+            resultado += "    "
+        }
+        else {
+            resultado += " "
+        }
 
-        if (line < numLines) resultado += "\n"
+        if (linha < numLines) resultado += "\n"
 
-        line++
+        linha++
     }
 
     return resultado
@@ -311,9 +319,11 @@ fun main() {
                     println("Número de minas inválido.")
                     print("Quantas minas?")
                     inputMinas = readLine()
-                    numMines = if (inputMinas.isNullOrBlank())
+                    numMines = if (inputMinas.isNullOrBlank()) {
+
                         calculaNumeroDeMinas(numLines, numColumns) ?: 1
-                    else
+                    }
+                    else{
                         inputMinas.toInt()
                 }
             }

@@ -8,6 +8,7 @@ fun criaMenu(): String {
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
 
 private const val NAO_IMPLEMENTADO = "NÃO IMPLEMENTADO"
+
 fun retornaMenu(respostaMenu : String): String{
 
     if(respostaMenu == "1") {
@@ -117,39 +118,19 @@ fun validaNumeroDeMinas(numLines: Int,numColumns: Int,numMines: Int): Boolean{
 }
 
 fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
-    if (numLines < 1 || numColumns < 1) {
-        return null
-    }
-    val casaVazias : Int = (numLines * numColumns) - 2
-    if (casaVazias <=0 ) {
-        return null
-    }
+    if (numLines < 1 || numColumns < 1) return null
 
-    var minas=0
-    if (casaVazias in 1..79) {
-        when (casaVazias) {
-            in 1..13 -> {
-                minas = 1
-            }
-            in 14..20 -> {
-                minas = 6
-            }
-            in 21..40 -> {
-                minas = 9
-            }
-            in 41..60 -> {
-                minas = 12
-            }
-            in 61..79 -> {
-                minas = 19
-            }
+    val casaVazias = numLines * numColumns - 2
+    if (casaVazias <= 0) return null
 
-        }
+    return when (casaVazias) {
+        in 1..13  -> (casaVazias + 1) / 2
+        in 14..20 -> 6
+        in 21..40 -> 9
+        in 41..60 -> 12
+        in 61..79 -> 19
+        else -> null
     }
-    else {
-        return null
-    }
-    return (minas)
 
 }
 fun pedeLegenda(): Boolean{
@@ -283,29 +264,49 @@ fun criaTerreno(numLines: Int, numColumns: Int, numMines: Int, legenda : Boolean
 
     return resultado
     }
+fun pedeMinas(numLines: Int, numColumns: Int): Int{
+    print("Quantas minas? (ou enter para o valor por omissão)")
+    var inputMinas = readLine()
 
+    var numMines: Int
+
+    if (inputMinas.isNullOrBlank()) {
+        numMines = calculaNumeroDeMinas(numLines, numColumns) ?: 1
+    } else {
+        numMines = inputMinas.toInt()
+        while (!validaNumeroDeMinas(numLines, numColumns, numMines)) {
+            println("Número de minas inválido.")
+            print("Quantas minas? (ou enter para o valor por omissão)")
+            inputMinas = readLine()
+
+            numMines = if (inputMinas.isNullOrBlank())
+                calculaNumeroDeMinas(numLines, numColumns) ?: 1
+            else
+                inputMinas.toInt()
+        }
+    }
+
+    return numMines
+
+}
 
 fun main() {
-
     var opcao: String
-    print(criaMenu())
 
     do {
-
+        print(criaMenu())
         opcao = readln()
 
         if (opcao != "0" && opcao != "1" && opcao != "2") {
             println(RESPOSTA_INVALIDA)
         }
-
     } while (opcao != "0" && opcao != "1" && opcao != "2")
-
 
     when (opcao) {
         "0" -> return
 
         "2" -> {
-            println("$NAO_IMPLEMENTADO")
+            println(NAO_IMPLEMENTADO)
             return
         }
 
@@ -316,29 +317,9 @@ fun main() {
             val numLines = pedeLinhas()!!.toInt()
             val numColumns = quantasColunas()!!.toInt()
 
-            print("Quantas minas?")
-            var inputMinas = readLine()
-            var numMines: Int
+            val numMines = pedeMinas(numLines, numColumns)
 
-            if (inputMinas.isNullOrBlank()) {
-                numMines = calculaNumeroDeMinas(numLines, numColumns) ?: 1
-            } else {
-                numMines = inputMinas.toInt()
-                while (!validaNumeroDeMinas(numLines, numColumns, numMines)) {
-                    println("Número de minas inválido.")
-                    print("Quantas minas?")
-                    inputMinas = readLine()
-                    numMines = if (inputMinas.isNullOrBlank()) {
-
-                        calculaNumeroDeMinas(numLines, numColumns) ?: 1
-                    } else {
-                        inputMinas.toInt()
-                    }
-
-                }
-            }
             println(criaTerreno(numLines, numColumns, numMines, mostraLegenda))
         }
     }
 }
-

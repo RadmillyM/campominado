@@ -17,11 +17,9 @@ fun retornaMenu(respostaMenu : String): String{
     }else if (respostaMenu == "2") {
         return ("$NAO_IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
-        return ""
-    }else return ("$RESPOSTA_INVALIDA.")
+        return " "
+    }else return ("Resposta invalida.")
 }
-
-
 fun validaNome(nome: String?, minSize: Int =4) : Boolean {
 //usa do retorno da ondeTemEspaco e temMaiuscula para ferificar se o nome é válido
     if (nome.isNullOrBlank()){
@@ -29,15 +27,15 @@ fun validaNome(nome: String?, minSize: Int =4) : Boolean {
     } else {
         if ( nome.length<minSize) {
             return false
-        } else{
-            if (temMaiuscula(nome)&& temEspaco(nome)== true) {
-                return true
+             } else{
+                if (temMaiuscula(nome)&& temEspaco(nome)== true) {
+                     return true
+                }
+                     return false
             }
-            return false
-        }
 
+        }
     }
-}
 
 
 fun ondeTemEspaco(nome: String?) : Int {
@@ -60,15 +58,17 @@ fun ondeTemEspaco(nome: String?) : Int {
 }
 
 fun temMaiuscula(nome: String?) : Boolean {
-    if (nome.isNullOrBlank()) return false
+    // Verifica se há maiusculas
+    if (nome.isNullOrBlank()) {
+        return false
+    }
+    val temnomeMaiusculo = nome[0].isUpperCase()
+    val temApelidoMaiusculo = nome[ondeTemEspaco(nome)+1].isUpperCase()
 
-    val pos = ondeTemEspaco(nome)
-    if (pos == -1 || pos == nome.length - 1) return false
-
-    val nomeUpper = nome[0].isUpperCase()
-    val apelidoApper = nome[pos + 1].isUpperCase()
-
-    return nomeUpper && apelidoApper
+    if (temApelidoMaiusculo && temnomeMaiusculo == true){
+        return true
+    }
+    return false
 }
 
 fun temEspaco(nome: String?) : Boolean {

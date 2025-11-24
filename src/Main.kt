@@ -1,7 +1,10 @@
 import kotlin.system.exitProcess
 
 fun criaMenu(): String {
-    return ("\nBem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair \n")
+    return ("\nBem vindo ao Campo DEISIado\n" +
+            "1 - Novo Jogo\n" +
+            "2 - Ler Jogo\n" +
+            "0 - Sair\n")
 }
 //constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
@@ -18,37 +21,22 @@ fun retornaMenu(respostaMenu : String): String{
 }
 
 
-fun validaNome(nome: String?, minSize: Int =3) : Boolean {
-
-    if (nome.isNullOrBlank()) return false
-
-    if (!temEspaco(nome)) return false
-
-    val pos = ondeTemEspaco(nome)
-    if (pos <= 0 || pos >= nome.length - 1) return false
-
-    val tamanhoPrimeira = pos
-    val tamanhoSegunda = nome.length - pos - 1
-    if (tamanhoPrimeira < minSize) return false
-    if (tamanhoSegunda < minSize) return false
-
-    if (!temMaiuscula(nome)) return false
-
-    var indice = 0
-    var espacos = 0
-    while (indice < nome.length) {
-        val letra = nome[indice]
-        if (letra == ' ') {
-            espacos = espacos + 1
-        } else {
-            if (!letra.isLetter()) return false
+fun validaNome(nome: String?, minSize: Int =4) : Boolean {
+//usa do retorno da ondeTemEspaco e temMaiuscula para ferificar se o nome é válido
+    if (nome.isNullOrBlank()){
+        return false
+    } else {
+        if ( nome.length<minSize) {
+            return false
+        } else{
+            if (temMaiuscula(nome)&& temEspaco(nome)== true) {
+                return true
+            }
+            return false
         }
-        indice = indice + 1
-    }
-    if (espacos != 1) return false
 
-    return true
     }
+}
 
 
 fun ondeTemEspaco(nome: String?) : Int {
@@ -206,7 +194,7 @@ fun pedeLinhas(): String? {
     print("Quantas linhas?")
         var numLines=readln().toInt()
 
-    while (numLines < 0){ //  !== erro sintaxe
+    while (numLines < 1){ //  !== erro sintaxe
         print("$RESPOSTA_INVALIDA.")
 
         print("Quantas linhas?")
@@ -229,68 +217,70 @@ fun quantasColunas(): String?{
 }
 fun criaTerreno(numColumns: Int, numLines: Int, numMines: Int, legenda : Boolean = true): String {
 
-        if (!validaNumeroDeMinas(numLines, numColumns, numMines)) {
-            return ""
+    if (!validaNumeroDeMinas(numLines, numColumns, numMines)) return ""
+
+    var resultado = ""
+
+    if (legenda) {
+        resultado += "    " + (criaLegenda(numColumns) ?: "") + "    \n"
+    }
+
+    val total = numLines * numColumns
+    var pos = 0
+    var mines = 0
+    var line = 1
+
+    while (line <= numLines) {
+
+        if (legenda) resultado += " $line  "
+        else resultado += " "
+
+        var col = 1
+        while (col <= numColumns) {
+
+            val ch =
+                if (pos == 0) 'J'
+                else if (pos == total - 1) 'f'
+                else if (mines < numMines) { mines++; '*' }
+                else ' '
+
+            resultado += ch
+
+            if (col < numColumns) resultado += " | "
+
+            pos++
+            col++
         }
 
-        var resultado = ""
+        if (legenda) resultado += "    "
+        else resultado += " "
 
-        if (legenda) {
-            resultado +=  " " + (criaLegenda(numColumns) )+ "    \n"
-        }
+        if (line < numLines) resultado += "\n"
 
-        val totalPosicoes = numLines * numColumns
-        var contadorCriaterreno = 0
-        var colAtual = 0
-        var minasColocadas = 0
+        line++
+    }
 
-
-        while (contadorCriaterreno < totalPosicoes) {
-
-            var simbolo = ' '
-
-            if (contadorCriaterreno == 0) {
-                simbolo = 'J'
-            } else if (contadorCriaterreno == totalPosicoes - 1) {
-                simbolo = 'f'
-            } else {
-                if (minasColocadas < numMines) {
-                    minasColocadas = minasColocadas + 1
-                    simbolo = '*'
-                } else ' '
-
-
-            }
-
-            resultado += simbolo
-
-            contadorCriaterreno = contadorCriaterreno + 1
-            colAtual = colAtual + 1
-
-            if (colAtual < numColumns && contadorCriaterreno < totalPosicoes) {
-                resultado += " | "
-            }
-
-            if (colAtual == numColumns && contadorCriaterreno < totalPosicoes) {
-                resultado += "\n"
-                colAtual = 0
-            }
-        }
-
-        return resultado
+    return resultado
     }
 
 
 fun main() {
-    print(criaMenu()) // ver como fazer print das funções sem print no main ? confirmar no enunciado
+
     var opcao = readln()
 
-    while (opcao != "0" && opcao != "1"){
-
-        print(retornaMenu(opcao))
+    do {
         print(criaMenu())
-        opcao= readln()
-
+        opcao = readln()
+        if (opcao != "0" && opcao != "1" && opcao != "2") {
+            print(RESPOSTA_INVALIDA + "\n")
+        }
+    } while (opcao != "0" && opcao != "1" && opcao != "2")
+    if (opcao == "0"){
+        return
+    }
+    if (opcao == "2"){
+        print ("NÃO IMPLEMENTADO")
+        return
     }
 
     if (opcao != "1" ) {
@@ -325,14 +315,5 @@ fun main() {
                 }
             }
         }
-
-        print(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
-  /*  } else if (opcao == "2"){
-
-    }else if (opcao == "0"){
-
-    }else {
-        print("Resposta Inválida.")
-    }*/
     }
 }

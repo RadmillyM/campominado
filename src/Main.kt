@@ -1,10 +1,8 @@
 import kotlin.system.exitProcess
 
 fun criaMenu(): String {
-    return "\nBem vindo ao Campo DEISIado\n" +
-            "1 - Novo Jogo\n" +
-            "2 - Ler Jogo\n" +
-            "0 - Sair\n"
+    return "\nBem vindo ao Campo DEISIado\n1 - Novo Jogo\n2 - Ler Jogo\n0 - Sair\n"
+
 }
 //constante feita para a string de resposta inválida
 private const val RESPOSTA_INVALIDA = "Resposta invalida"
@@ -18,7 +16,7 @@ fun retornaMenu(respostaMenu : String): String{
         return ("$NAO_IMPLEMENTADO") // validar o qq faz
     }else if (respostaMenu =="0") {
         return " "
-    }else return ("Resposta invalida.")
+    }else return ("$RESPOSTA_INVALIDA")
 }
 fun validaNome(nome: String?, minSize: Int =4) : Boolean {
 //usa do retorno da ondeTemEspaco e temMaiuscula para ferificar se o nome é válido
@@ -123,6 +121,9 @@ fun calculaNumeroDeMinas(numLines: Int,numColumns: Int): Int? {
         return null
     }
     val casaVazias : Int = (numLines * numColumns) - 2
+    if (casaVazias <=0 ) {
+        return null
+    }
 
     var minas=0
     if (casaVazias in 1..79) {
@@ -285,10 +286,12 @@ fun criaTerreno(numLines: Int, numColumns: Int, numMines: Int, legenda : Boolean
 
 
 fun main() {
+
     var opcao: String
+    print(criaMenu())
 
     do {
-        print(criaMenu())
+
         opcao = readln()
 
         if (opcao != "0" && opcao != "1" && opcao != "2") {
@@ -296,6 +299,7 @@ fun main() {
         }
 
     } while (opcao != "0" && opcao != "1" && opcao != "2")
+
 
     when (opcao) {
         "0" -> return
@@ -306,13 +310,13 @@ fun main() {
         }
 
         "1" -> {
-            val nome = lerNome()
+            lerNome()
             val mostraLegenda = pedeLegenda()
 
             val numLines = pedeLinhas()!!.toInt()
             val numColumns = quantasColunas()!!.toInt()
 
-            println("Quantas minas?")
+            print("Quantas minas?")
             var inputMinas = readLine()
             var numMines: Int
 
@@ -322,19 +326,19 @@ fun main() {
                 numMines = inputMinas.toInt()
                 while (!validaNumeroDeMinas(numLines, numColumns, numMines)) {
                     println("Número de minas inválido.")
-                    println("Quantas minas?")
+                    print("Quantas minas?")
                     inputMinas = readLine()
                     numMines = if (inputMinas.isNullOrBlank()) {
 
                         calculaNumeroDeMinas(numLines, numColumns) ?: 1
-                    }
-                    else{
+                    } else {
                         inputMinas.toInt()
+                    }
+
                 }
             }
-
-            println(criaTerreno(numColumns, numLines, numMines, mostraLegenda))
+            println(criaTerreno(numLines, numColumns, numMines, mostraLegenda))
         }
     }
-    }
 }
+

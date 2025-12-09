@@ -317,13 +317,38 @@ fun pedeMinas(numLines: Int, numColumns: Int): Int{
 //parte 2
 
 fun obtemCoordenadas(input: String?): Pair<Int, Int>? {
-    return null
+    if (input == null || input.length != 2) return null
+
+    val charLinha = input[0]
+    val charColuna = input[1].uppercaseChar()
+
+    if (!charLinha.isDigit()) return null
+
+    val linha = charLinha - '1'
+    if (linha !in 0..8) return null
+
+    val coluna = when (charColuna) {
+        'A' -> 0
+        'B' -> 1
+        'C' -> 2
+        'D' -> 3
+        'E' -> 4
+        'F' -> 5
+        'G' -> 6
+        'H' -> 7
+        'I' -> 8
+        else -> return null
+    }
+
+    return Pair(linha, coluna)
 }
 fun validaMovimentoJogador(origem: Pair<Int, Int>, destino: Pair<Int, Int>): Boolean {
     return false
 }
-fun validaCoordenadasDentroTerreno(coord: Pair<Int, Int>?, numLinhas: Int, numColunas: Int): Boolean {
-
+fun validaCoordenadasDentroTerreno(coordenada: Pair<Int, Int>?, numLinhas: Int, numColunas: Int): Boolean {
+    if (coordenada == null) return false
+    val (linha, coluna) = coordenada
+    return linha in 0 until numLinhas && coluna in 0 until numColunas
     return false
 }
 

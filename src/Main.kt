@@ -21,17 +21,6 @@ private const val RESPOSTA_INVALIDA = "Resposta invalida"
 
 private const val NAO_IMPLEMENTADO = "NÃO IMPLEMENTADO"
 
-/*fun retornaMenu(respostaMenu : String): String{
-
-    if(respostaMenu == "1") {
-        return ("Novo jogo") // retirei porque precisa de parametro para correr
-    }else if (respostaMenu == "2") {
-        return ("$NAO_IMPLEMENTADO") // validar o qq faz
-    }else if (respostaMenu =="0") {
-        return " "
-    }else return ("$RESPOSTA_INVALIDA")
-}*/
-
 fun validaNome(nome: String?, minSize: Int =4) : Boolean {
 //usa do retorno da ondeTemEspaco e temMaiuscula para ferificar se o nome é válido
     if (nome.isNullOrBlank()){
@@ -347,9 +336,11 @@ fun validaMovimentoJogador(origem: Pair<Int, Int>, destino: Pair<Int, Int>): Boo
 }
 fun validaCoordenadasDentroTerreno(coordenada: Pair<Int, Int>?, numLinhas: Int, numColunas: Int): Boolean {
     if (coordenada == null) return false
+
     val (linha, coluna) = coordenada
+
     return linha in 0 until numLinhas && coluna in 0 until numColunas
-    return false
+
 }
 
 fun quadradoAVoltaDoPonto(linha: Int,coluna: Int,numLinhas: Int,numColunas: Int): Pair<Pair<Int, Int>, Pair<Int, Int>> {

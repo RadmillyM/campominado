@@ -409,9 +409,7 @@ fun contaMinasPerto(
     return contadorMinas
 }
 
-
 fun geraMatrizTerreno(numLinhas: Int, numColunas: Int, numMinas: Int): Array<Array<Pair<String, Boolean>>> {
-
     if (numLinhas < 1 || numColunas < 1 || numMinas < 0) return emptyArray()
 
     val totalCelulas = numLinhas * numColunas
@@ -419,41 +417,39 @@ fun geraMatrizTerreno(numLinhas: Int, numColunas: Int, numMinas: Int): Array<Arr
     if (numMinas > maxMinas) return emptyArray()
 
     val terreno = Array(numLinhas) { Array(numColunas) { Pair(VAZIO, false) } }
-
     terreno[0][0] = Pair(JOGADOR, true)
     terreno[numLinhas - 1][numColunas - 1] = Pair(FINAL, true)
 
-    // índices lineares válidos: 1 .. total-2 (exclui 0 e total-1)
-    val posicoes = IntArray(maxMinas)
-    var indicePos = 0
-    var indiceLinear = 1
-    while (indiceLinear <= totalCelulas - 2) {
-        posicoes[indicePos] = indiceLinear
-        indicePos++
-        indiceLinear++
+    val posicoesDisponiveis = IntArray(maxMinas)
+    var indicePosicoes = 0
+    var posicaoLinear = 1
+    while (posicaoLinear <= totalCelulas - 2) {
+        posicoesDisponiveis[indicePosicoes] = posicaoLinear
+        indicePosicoes++
+        posicaoLinear++
     }
 
-    // baralhar Fisher-Yates
-    var i = posicoes.size - 1
-    while (i > 0) {
-        val j = Random.nextInt(i + 1)
-        val tmp = posicoes[i]
-        posicoes[i] = posicoes[j]
-        posicoes[j] = tmp
-        i--
+    var indiceBaralhar = posicoesDisponiveis.size - 1
+    while (indiceBaralhar > 0) {
+        val indiceTroca = Random.nextInt(indiceBaralhar + 1)
+        val temp = posicoesDisponiveis[indiceBaralhar]
+        posicoesDisponiveis[indiceBaralhar] = posicoesDisponiveis[indiceTroca]
+        posicoesDisponiveis[indiceTroca] = temp
+        indiceBaralhar--
     }
 
     var minasColocadas = 0
     while (minasColocadas < numMinas) {
-        val idx = posicoes[minasColocadas]
-        val linhaMina = idx / numColunas
-        val colunaMina = idx % numColunas
+        val posicaoMina = posicoesDisponiveis[minasColocadas]
+        val linhaMina = posicaoMina / numColunas
+        val colunaMina = posicaoMina % numColunas
         terreno[linhaMina][colunaMina] = Pair(MINA, false)
         minasColocadas++
     }
 
     return terreno
 }
+
 
 fun celulaTemNumeroMinasVisivel(terreno: Array<Array<Pair<String, Boolean>>>, linha: Int, coluna: Int): Boolean {
     if (terreno.isEmpty() || terreno[0].isEmpty()) return false
@@ -483,42 +479,29 @@ fun escondeMatriz(terreno: Array<Array<Pair<String, Boolean>>>) {
         linhaAtual++
     }
 }
-
 fun preencheNumMinasNoTerreno(terreno: Array<Array<Pair<String, Boolean>>>) {
     if (terreno.isEmpty() || terreno[0].isEmpty()) return
 
-    val numLinhas = terreno.size
-    val numColunas = terreno[0].size
+    val totalLinhas = terreno.size
+    val totalColunas = terreno[0].size
 
-    var l = 0
-    while (l < numLinhas) {
-        var c = 0
-        while (c < numColunas) {
-            val valor = terreno[l][c].first
+    for (linha in 0 until totalLinhas) {
+        for (coluna in 0 until totalColunas) {
+            val (simbolo, visivel) = terreno[linha][coluna]
 
-            if (valor == VAZIO) {
-                val minas = contaMinasPerto(terreno, l, c)
-                val novo = if (minas == 0) VAZIO else minas.toString()
-                terreno[l][c] = Pair(novo, false) // mantém false
-            } else if (valor == MINA) {
-                terreno[l][c] = Pair(MINA, false) // mantém false
-            } else if (valor == JOGADOR) {
-                terreno[l][c] = Pair(JOGADOR, true)
-            } else if (valor == FINAL) {
-                terreno[l][c] = Pair(FINAL, true)
-            } else {
+            if (simbolo == VAZIO) {
+                val minasAdjacentes = contaMinasPerto(terreno, linha, coluna)
 
-                terreno[l][c] = Pair(valor, false)
+                terreno[linha][coluna] = if (minasAdjacentes == 0) {
+                    Pair(VAZIO, visivel)                 // mantém visibilidade original
+                } else {
+                    Pair(minasAdjacentes.toString(), false) // número invisível
+                }
             }
-
-            c++
         }
-        l++
     }
-
-    terreno[0][0] = Pair(JOGADOR, true)
-    terreno[numLinhas - 1][numColunas - 1] = Pair(FINAL, true)
 }
+
 
 
 fun revelaMatriz(terreno: Array<Array<Pair<String, Boolean>>>, linha: Int, coluna: Int) {
@@ -529,21 +512,20 @@ fun revelaMatriz(terreno: Array<Array<Pair<String, Boolean>>>, linha: Int, colun
     if (linha !in 0 until numLinhas || coluna !in 0 until numColunas) return
 
     val quad = quadradoAVoltaDoPonto(linha, coluna, numLinhas, numColunas)
-    val (minL, minC) = quad.first
-    val (maxL, maxC) = quad.second
+    val min = quad.first
+    val max = quad.second
 
-    var l = minL
-    while (l <= maxL) {
-        var c = minC
-        while (c <= maxC) {
-            val valor = terreno[l][c].first
-            val v = terreno[l][c].first
-            if (v.length == 1 && v[0] in '1'..'8') {
-                terreno[l][c] = Pair(v, true)
+    var linha = min.first
+    while (linha <= max.first) {
+        var coluna = min.second
+        while (coluna <= max.second) {
+            val valor = terreno[linha][coluna].first
+            if (valor.length == 1 && valor[0] in '1'..'8') {
+                terreno[linha][coluna] = Pair(valor, true) // só números!
             }
-            c++
+            coluna++
         }
-        l++
+        linha++
     }
 
     terreno[0][0] = Pair(JOGADOR, true)
@@ -616,11 +598,7 @@ fun criaTerreno(terreno: Array<Array<Pair<String, Boolean>>>, mostraLegenda: Boo
 }
 
 
-fun lerFicheiroJogo(
-    nomeFicheiro: String,
-    numLinhasEsperadas: Int,
-    numColunasEsperadas: Int
-): Array<Array<Pair<String, Boolean>>>? {
+fun lerFicheiroJogo(nomeFicheiro: String, numLinhasEsperadas: Int, numColunasEsperadas: Int): Array<Array<Pair<String, Boolean>>>? {
 
     if (numLinhasEsperadas <= 0 || numColunasEsperadas <= 0) return null
 
@@ -645,16 +623,15 @@ fun lerFicheiroJogo(
 
         segmento = segmento.trim()
 
-        // prioridade: J / f / * (mesmo que haja dígitos noutro sítio)
         if (segmento.contains('J')) return JOGADOR
         if (segmento.contains('f')) return FINAL
         if (segmento.contains('*')) return MINA
 
-        var k = 0
-        while (k < segmento.length) {
-            val ch = segmento[k]
+        var indiceChar = 0
+        while (indiceChar < segmento.length) {
+            val ch = segmento[indiceChar]
             if (ch in '1'..'8') return ch.toString()
-            k++
+            indiceChar++
         }
 
         return VAZIO
@@ -721,7 +698,7 @@ fun validaTerreno(terreno: Array<Array<Pair<String, Boolean>>>?): Boolean {
 
     if (!terreno[0][0].second) return false
     if (!terreno[numLinhas - 1][numColunas - 1].second) return false
-
+    
     var contaJ = 0
     var contaF = 0
 

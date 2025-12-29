@@ -721,7 +721,7 @@ fun validaTerreno(terreno: Array<Array<Pair<String, Boolean>>>?): Boolean {
 
     if (!terreno[0][0].second) return false
     if (!terreno[numLinhas - 1][numColunas - 1].second) return false
-    
+
     var contaJ = 0
     var contaF = 0
 

@@ -22,6 +22,9 @@ private const val RESPOSTA_INVALIDA = "Resposta invalida."
 
 private const val NAO_IMPLEMENTADO = "NÃO IMPLEMENTADO"
 
+private const val MOVIMENTO_INVALIDO = "Movimento invalido."
+
+
 /*fun retornaMenu(respostaMenu : String): String{
 
     if(respostaMenu == "1") {
@@ -407,15 +410,12 @@ fun contaMinasPerto(
 }
 
 
-fun geraMatrizTerreno(
-    numLinhas: Int,
-    numColunas: Int,
-    numMinas: Int
-): Array<Array<Pair<String, Boolean>>> {
+fun geraMatrizTerreno(numLinhas: Int, numColunas: Int, numMinas: Int): Array<Array<Pair<String, Boolean>>> {
 
     if (numLinhas < 1 || numColunas < 1 || numMinas < 0) return emptyArray()
 
-    val maxMinas = numLinhas * numColunas - 2
+    val totalCelulas = numLinhas * numColunas
+    val maxMinas = totalCelulas - 2
     if (numMinas > maxMinas) return emptyArray()
 
     val terreno = Array(numLinhas) { Array(numColunas) { Pair(VAZIO, false) } }
@@ -423,36 +423,35 @@ fun geraMatrizTerreno(
     terreno[0][0] = Pair(JOGADOR, true)
     terreno[numLinhas - 1][numColunas - 1] = Pair(FINAL, true)
 
-    val posicoesPossiveis = mutableListOf<Pair<Int, Int>>()
-    var linhaAtual = 0
-    while (linhaAtual < numLinhas) {
-        var colunaAtual = 0
-        while (colunaAtual < numColunas) {
-            val eJogador = (linhaAtual == 0 && colunaAtual == 0)
-            val eFinal = (linhaAtual == numLinhas - 1 && colunaAtual == numColunas - 1)
-            if (!eJogador && !eFinal) {
-                posicoesPossiveis.add(Pair(linhaAtual, colunaAtual))
-            }
-            colunaAtual++
-        }
-        linhaAtual++
+    // índices lineares válidos: 1 .. total-2 (exclui 0 e total-1)
+    val posicoes = IntArray(maxMinas)
+    var indicePos = 0
+    var indiceLinear = 1
+    while (indiceLinear <= totalCelulas - 2) {
+        posicoes[indicePos] = indiceLinear
+        indicePos++
+        indiceLinear++
     }
 
-    var indice = posicoesPossiveis.size - 1
-    while (indice > 0) {
-        val indiceTroca = Random.nextInt(indice + 1)
-        val tempPosicao = posicoesPossiveis[indice]
-        posicoesPossiveis[indice] = posicoesPossiveis[indiceTroca]
-        posicoesPossiveis[indiceTroca] = tempPosicao
-        indice--
+    // baralhar Fisher-Yates
+    var i = posicoes.size - 1
+    while (i > 0) {
+        val j = Random.nextInt(i + 1)
+        val tmp = posicoes[i]
+        posicoes[i] = posicoes[j]
+        posicoes[j] = tmp
+        i--
     }
 
     var minasColocadas = 0
     while (minasColocadas < numMinas) {
-        val (linhaMina, colunaMina) = posicoesPossiveis[minasColocadas]
+        val idx = posicoes[minasColocadas]
+        val linhaMina = idx / numColunas
+        val colunaMina = idx % numColunas
         terreno[linhaMina][colunaMina] = Pair(MINA, false)
         minasColocadas++
     }
+
     return terreno
 }
 
@@ -491,27 +490,36 @@ fun preencheNumMinasNoTerreno(terreno: Array<Array<Pair<String, Boolean>>>) {
     val numLinhas = terreno.size
     val numColunas = terreno[0].size
 
-    var linhaAtual = 0
-    while (linhaAtual < numLinhas) {
-        var colunaAtual = 0
-        while (colunaAtual < numColunas) {
+    var l = 0
+    while (l < numLinhas) {
+        var c = 0
+        while (c < numColunas) {
+            val valor = terreno[l][c].first
 
-            val valorAtual = terreno[linhaAtual][colunaAtual].first
-            val visivelAtual = terreno[linhaAtual][colunaAtual].second
+            if (valor == VAZIO) {
+                val minas = contaMinasPerto(terreno, l, c)
+                val novo = if (minas == 0) VAZIO else minas.toString()
+                terreno[l][c] = Pair(novo, false) // mantém false
+            } else if (valor == MINA) {
+                terreno[l][c] = Pair(MINA, false) // mantém false
+            } else if (valor == JOGADOR) {
+                terreno[l][c] = Pair(JOGADOR, true)
+            } else if (valor == FINAL) {
+                terreno[l][c] = Pair(FINAL, true)
+            } else {
 
-            if (valorAtual == VAZIO) {
-                val minas = contaMinasPerto(terreno, linhaAtual, colunaAtual)
-                val novoValor = if (minas == 0) VAZIO else minas.toString()
-                terreno[linhaAtual][colunaAtual] = Pair(novoValor, visivelAtual)
-
+                terreno[l][c] = Pair(valor, false)
             }
-            colunaAtual++
+
+            c++
         }
-        linhaAtual++
+        l++
     }
+
     terreno[0][0] = Pair(JOGADOR, true)
     terreno[numLinhas - 1][numColunas - 1] = Pair(FINAL, true)
 }
+
 
 fun revelaMatriz(terreno: Array<Array<Pair<String, Boolean>>>, linha: Int, coluna: Int) {
     if (terreno.isEmpty() || terreno[0].isEmpty()) return
@@ -520,41 +528,28 @@ fun revelaMatriz(terreno: Array<Array<Pair<String, Boolean>>>, linha: Int, colun
     val numColunas = terreno[0].size
     if (linha !in 0 until numLinhas || coluna !in 0 until numColunas) return
 
-    val valorCentro = terreno[linha][coluna].first
-    if (valorCentro != MINA) {
-        terreno[linha][coluna] = Pair(valorCentro, true)
+    val quad = quadradoAVoltaDoPonto(linha, coluna, numLinhas, numColunas)
+    val (minL, minC) = quad.first
+    val (maxL, maxC) = quad.second
+
+    var l = minL
+    while (l <= maxL) {
+        var c = minC
+        while (c <= maxC) {
+            val valor = terreno[l][c].first
+            val v = terreno[l][c].first
+            if (v.length == 1 && v[0] in '1'..'8') {
+                terreno[l][c] = Pair(v, true)
+            }
+            c++
+        }
+        l++
     }
 
-    var distancia = 1
-    while (distancia <= 2) {
-
-        if (linha - distancia >= 0) {
-            val valorCima = terreno[linha - distancia][coluna].first
-            if (valorCima != MINA) terreno[linha - distancia][coluna] = Pair(valorCima, true)
-        }
-
-        if (linha + distancia < numLinhas) {
-            val valorBaixo = terreno[linha + distancia][coluna].first
-            if (valorBaixo != MINA) terreno[linha + distancia][coluna] = Pair(valorBaixo, true)
-        }
-
-        if (coluna - distancia >= 0) {
-            val valorEsquerda = terreno[linha][coluna - distancia].first
-            if (valorEsquerda != MINA) terreno[linha][coluna - distancia] = Pair(valorEsquerda, true)
-        }
-
-        if (coluna + distancia < numColunas) {
-            val valorDireita = terreno[linha][coluna + distancia].first
-            if (valorDireita != MINA) terreno[linha][coluna + distancia] = Pair(valorDireita, true)
-        }
-
-        distancia++
-    }
-
-    // garante J e f visíveis
     terreno[0][0] = Pair(JOGADOR, true)
     terreno[numLinhas - 1][numColunas - 1] = Pair(FINAL, true)
 }
+
 
 fun criaTerreno(terreno: Array<Array<Pair<String, Boolean>>>, mostraLegenda: Boolean = true, mostraTudo: Boolean = false): String {
 
@@ -621,41 +616,92 @@ fun criaTerreno(terreno: Array<Array<Pair<String, Boolean>>>, mostraLegenda: Boo
 }
 
 
-fun lerFicheiroJogo(nomeFicheiro: String, numLinhasEsperadas: Int, numColunasEsperadas: Int): Array<Array<Pair<String, Boolean>>>? {
+fun lerFicheiroJogo(
+    nomeFicheiro: String,
+    numLinhasEsperadas: Int,
+    numColunasEsperadas: Int
+): Array<Array<Pair<String, Boolean>>>? {
 
     if (numLinhasEsperadas <= 0 || numColunasEsperadas <= 0) return null
 
     val ficheiro = File(nomeFicheiro)
     if (!ficheiro.exists()) return null
 
-    val texto = ficheiro.readText()
-
-    val celulas = mutableListOf<Char>()
-    for (ch in texto) {
-        if (ch == 'J' || ch == 'f' || ch == '*' || ch == ' ' || ch in '1'..'8') {
-            celulas.add(ch)
-        }
-    }
-
-    val total = numLinhasEsperadas * numColunasEsperadas
-    if (celulas.size < total) return null
+    val linhas = ficheiro.readLines()
 
     val terreno = Array(numLinhasEsperadas) {
         Array(numColunasEsperadas) { Pair(VAZIO, false) }
     }
 
-    var indiceCelula = 0
-    for (l in 0 until numLinhasEsperadas) {
-        for (c in 0 until numColunasEsperadas) {
-            val v = celulas[indiceCelula++].toString()
-            val visivel = (v == JOGADOR || v == FINAL)
-            terreno[l][c] = Pair(v, visivel)
+    fun extraiSimbolo(segmentoOriginal: String, primeiraColuna: Boolean): String {
+        var segmento = segmentoOriginal
+
+        if (primeiraColuna) {
+            segmento = segmento.trimStart()
+            var i = 0
+            while (i < segmento.length && segmento[i].isDigit()) i++
+            segmento = segmento.substring(i).trimStart()
         }
+
+        segmento = segmento.trim()
+
+        // prioridade: J / f / * (mesmo que haja dígitos noutro sítio)
+        if (segmento.contains('J')) return JOGADOR
+        if (segmento.contains('f')) return FINAL
+        if (segmento.contains('*')) return MINA
+
+        var k = 0
+        while (k < segmento.length) {
+            val ch = segmento[k]
+            if (ch in '1'..'8') return ch.toString()
+            k++
+        }
+
+        return VAZIO
     }
 
+    var linhaTerreno = 0
+    var idxLinha = 0
+
+    while (idxLinha < linhas.size && linhaTerreno < numLinhasEsperadas) {
+        val linhaTexto = linhas[idxLinha]
+
+        // linha de tabuleiro tem '|' e NÃO é separador ---+---
+        if (linhaTexto.contains('|') && !linhaTexto.contains("---")) {
+
+            var colunaAtual = 0
+            var inicio = 0
+            var posBarra = linhaTexto.indexOf('|', inicio)
+
+            // colunas 0..numColunas-2
+            while (colunaAtual < numColunasEsperadas - 1) {
+                if (posBarra == -1) return null
+
+                val segmento = linhaTexto.substring(inicio, posBarra)
+                val simbolo = extraiSimbolo(segmento, colunaAtual == 0)
+                val visivel = (simbolo == JOGADOR || simbolo == FINAL)
+
+                terreno[linhaTerreno][colunaAtual] = Pair(simbolo, visivel)
+
+                colunaAtual++
+                inicio = posBarra + 1
+                posBarra = linhaTexto.indexOf('|', inicio)
+            }
+
+            val segmentoFinal = linhaTexto.substring(inicio)
+            val simboloFinal = extraiSimbolo(segmentoFinal, false)
+            val visivelFinal = (simboloFinal == JOGADOR || simboloFinal == FINAL)
+            terreno[linhaTerreno][numColunasEsperadas - 1] = Pair(simboloFinal, visivelFinal)
+
+            linhaTerreno++
+        }
+
+        idxLinha++
+    }
+
+    if (linhaTerreno != numLinhasEsperadas) return null
     return terreno
 }
-
 
 fun validaTerreno(terreno: Array<Array<Pair<String, Boolean>>>?): Boolean {
     if (terreno == null) return false
@@ -723,57 +769,65 @@ fun executaJogo(terreno: Array<Array<Pair<String, Boolean>>>, mostraLegenda: Boo
 
     val numLinhas = terreno.size
     val numColunas = terreno[0].size
-
+    var mostrarTudoNoProximoCiclo = false
     escondeMatriz(terreno)
 
     var valorSobJogador = VAZIO
 
     while (true) {
-        print(criaTerreno(terreno, mostraLegenda, mostraTudo = false))
+        val mostraTudoAgora = mostrarTudoNoProximoCiclo
+        mostrarTudoNoProximoCiclo = false
+        print(criaTerreno(terreno, mostraLegenda, mostraTudo = mostraTudoAgora))
         println("Introduz a celula destino (ex: 2D)")
 
         val input = readLine()?.trim().orEmpty()
+        if (input == "sair"){
+            return
+        }else if (input.lowercase() == "abracadabra") {
+            mostrarTudoNoProximoCiclo = true
 
-        if (input == "0") return
-
-        val destino = obtemCoordenadas(input)
-        val destinoValido = validaCoordenadasDentroTerreno(destino, numLinhas, numColunas)
-
-        if (!destinoValido) {
-            println(RESPOSTA_INVALIDA)
         } else {
-            val origem = encontraJogador(terreno)
-            val movimentoValido = origem != null && validaMovimentoJogador(origem, destino!!)
 
-            if (!movimentoValido) {
+            val destino = obtemCoordenadas(input)
+            val destinoValido = validaCoordenadasDentroTerreno(destino, numLinhas, numColunas)
+
+            if (!destinoValido) {
                 println(RESPOSTA_INVALIDA)
             } else {
-                val (linhaOrigem, colunaOrigem) = origem!!
-                val (linhaDestino, colunaDestino) = destino!!
+                val origem = encontraJogador(terreno)
+                val movimentoValido = origem != null && validaMovimentoJogador(origem, destino!!)
 
-                terreno[linhaOrigem][colunaOrigem] = Pair(valorSobJogador, true)
+                if (!movimentoValido) {
+                    println(MOVIMENTO_INVALIDO)
+                } else {
+                    val (linhaOrigem, colunaOrigem) = origem!!
+                    val (linhaDestino, colunaDestino) = destino!!
 
-                val valorDestino = terreno[linhaDestino][colunaDestino].first
+                    terreno[linhaOrigem][colunaOrigem] = Pair(valorSobJogador, true)
 
-                if (valorDestino == MINA) {
-                    terreno[linhaDestino][colunaDestino] = Pair(MINA, true)
-                    print(criaTerreno(terreno, mostraLegenda, mostraTudo = true))
-                    return
+                    val valorDestino = terreno[linhaDestino][colunaDestino].first
+
+                    if (valorDestino == MINA) {
+                        terreno[linhaDestino][colunaDestino] = Pair(MINA, true)
+                        print(criaTerreno(terreno, mostraLegenda, mostraTudo = true))
+                        println("Perdeste o jogo!")
+                        return
+                    }
+
+                    if (valorDestino == FINAL) {
+                        terreno[linhaDestino][colunaDestino] = Pair(FINAL, true)
+                        print(criaTerreno(terreno, mostraLegenda, mostraTudo = true))
+                        return
+                    }
+
+                    valorSobJogador = valorDestino
+
+                    terreno[linhaDestino][colunaDestino] = Pair(JOGADOR, true)
+
+                    revelaMatriz(terreno, linhaDestino, colunaDestino)
+
+                    terreno[numLinhas - 1][numColunas - 1] = Pair(FINAL, true)
                 }
-
-                if (valorDestino == FINAL) {
-                    terreno[linhaDestino][colunaDestino] = Pair(FINAL, true)
-                    print(criaTerreno(terreno, mostraLegenda, mostraTudo = true))
-                    return
-                }
-
-                valorSobJogador = valorDestino
-
-                terreno[linhaDestino][colunaDestino] = Pair(JOGADOR, true)
-
-                revelaMatriz(terreno, linhaDestino, colunaDestino)
-
-                terreno[numLinhas - 1][numColunas - 1] = Pair(FINAL, true)
             }
         }
     }
@@ -785,7 +839,7 @@ fun main() {
 
     do {
         println(criaMenu())
-        opcao = readln()
+        opcao = readln()?.trim().orEmpty()
 
         if (opcao != "0" && opcao != "1" && opcao != "2") {
             println(RESPOSTA_INVALIDA)
@@ -796,16 +850,18 @@ fun main() {
         "0" -> return
 
         "2" -> {
+            var terreno: Array<Array<Pair<String, Boolean>>>? = null
             lerNome()
             val mostraLegenda = pedeLegenda()
             val numLines = pedeLinhas()!!.toInt()
             val numColumns = quantasColunas()!!.toInt()
+
             println("Qual o ficheiro de jogo a carregar?")
             val nomeFicheiro = readLine()?.trim().orEmpty()
-            val terreno = lerFicheiroJogo(nomeFicheiro, numLines, numColumns)
+            terreno = lerFicheiroJogo(nomeFicheiro, numLines, numColumns)
             if (!validaTerreno(terreno)) {
 
-                println("Terreno de jogo invalido")
+                println("Terreno de jogo invalido\n")
 
             } else {
                 preencheNumMinasNoTerreno(terreno!!)
